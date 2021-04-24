@@ -2,9 +2,9 @@ package jsonElements
 
 import Visitor
 
-class JsonCollection(name:String, value: Any, val insideObject:Boolean = false): JsonElement(name,value) {
+class JsonCollection(name:String, value: Any, private val insideObject:Boolean = false): JsonElement(name,value) {
 
-    private val collection: MutableCollection<JsonElement?> = mutableListOf()
+    val collection: MutableCollection<JsonElement?> = mutableListOf()
 
     init {
         if(value is Collection<*>)
@@ -12,7 +12,7 @@ class JsonCollection(name:String, value: Any, val insideObject:Boolean = false):
     }
 
     override fun accept(v: Visitor) {
-
+        v.visit(this)
     }
 
     override fun serialize(): String {

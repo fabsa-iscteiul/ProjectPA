@@ -11,6 +11,6 @@ class JsonInteger(name: String,value: Int): JsonElement(name,value) {
     }
 
     override fun accept(v: Visitor) {
-
+        v.visit(this)
     }
 }

@@ -8,7 +8,7 @@ import kotlin.reflect.full.declaredMemberProperties
 
 class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElement(name, value) {
 
-    private val map = mutableMapOf<String, JsonElement?>();
+    val map = mutableMapOf<String, JsonElement?>();
     var numberOfObjects : Int = 0
 
     init {
@@ -105,19 +105,7 @@ class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElemen
     }
 
     override fun accept(v: Visitor){
-        if(v.getOperation().toLowerCase() == "serialize")
-            println(serialize())
-        else if(v.getOperation().toLowerCase() == "getAll")
-            getAll("String")
-    }
-
-    private fun getAll(type: String): List<String>{
-        val list = mutableListOf<String>()
-        map.values.forEach {
-            if(it is JsonString)
-                list.add(it.getValue() as String)
-        }
-        return list
+        v.visit(this)
     }
 
 }

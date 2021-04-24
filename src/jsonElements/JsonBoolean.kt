@@ -11,6 +11,6 @@ class JsonBoolean(name:String,value: Boolean) : JsonElement(name,value) {
     }
 
     override fun accept(v: Visitor) {
-
+        v.visit(this)
     }
 }

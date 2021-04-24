@@ -8,5 +8,4 @@ interface Visitor {
     fun visit(int: JsonInteger)
     fun visit(obj: JsonObject)
     fun visit(str: JsonString)
-    fun getOperation():String
 }

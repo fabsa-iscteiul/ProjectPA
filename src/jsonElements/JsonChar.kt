@@ -10,7 +10,7 @@ class JsonChar(name: String, value: Char) : JsonElement(name,value) {
     }
 
     override fun accept(v: Visitor) {
-
+        v.visit(this)
     }
 
 }

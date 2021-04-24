@@ -10,6 +10,6 @@ class JsonEnum(name:String, value:Enum<*>): JsonElement(name,value) {
     }
 
     override fun accept(v: Visitor) {
-
+        v.visit(this)
     }
 }

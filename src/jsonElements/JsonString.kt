@@ -11,7 +11,7 @@ class JsonString(name:String, value:String): JsonElement(name,value) {
     }
 
     override fun accept(v: Visitor) {
-
+        v.visit(this)
     }
 
 }

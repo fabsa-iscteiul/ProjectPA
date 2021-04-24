@@ -25,10 +25,12 @@ enum class MyEnum(private val unit:String, private val meters:Double){
 
 fun main(){
     val v = JsonVisitor("serialize")
-    val jo = JsonObject("ola", TestCollect( mutableListOf(1,2,3,4)))
+    //val jo = JsonObject("ola", TestCollect( mutableListOf(1,2,3,4)))
+
+    val jo =JsonObject("val", TestObject(true, ObjectTest("test",OtherObject("U",OtherOther("other")))))
     jo.accept(v)
 
-    //println(JsonObject("val", TestObject(true, ObjectTest("test",OtherObject("U",OtherOther("other"))))).serialize())
+    //jo.accept(v)
 }
 
 class TestCollect(val list: MutableList<Int>) {
