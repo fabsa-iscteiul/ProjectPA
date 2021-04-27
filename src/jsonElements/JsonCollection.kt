@@ -34,6 +34,19 @@ class JsonCollection(name:String, value: Any, private val insideObject:Boolean =
 
     }
 
+    fun getAllStrings():List<String>{
+        val list = mutableListOf<String>()
+        collection.forEach {
+            if(it is JsonString)
+                list.add(it.getValue() as String)
+            else if(it is JsonObject )
+                list.addAll(it.getAllStrings())
+            else if(it is JsonCollection)
+                list.addAll(it.getAllStrings())
+        }
+        return list
+    }
+
     private fun mapTypeToJson(valueToType: Any): JsonElement {
         return when (valueToType) {
             is String -> JsonString("", valueToType)
