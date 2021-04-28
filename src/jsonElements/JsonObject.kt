@@ -1,10 +1,14 @@
 package jsonElements
 
+import Id
+import Ignore
 import Visitor
 import java.lang.Exception
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElement(name, value) {
 
@@ -62,41 +66,27 @@ class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElemen
 
     private fun buildObject(obj : KClass<Any>){
         obj.declaredMemberProperties.forEach {
-            val valueToType = it.call(super.getValue())
-            if(valueToType != null)
-                map[it.name] = mapTypeToJson(it,valueToType)
-            else
-                map[it.name]= null
+            if(!it.hasAnnotation<Ignore>()) {
+                val valueToType = it.call(super.getValue())
+                val varName = if(it.hasAnnotation<Id>()) it.findAnnotation<Id>()!!.newId else it.name
+                if (valueToType != null)
+                    map[varName] = mapTypeToJson(varName, valueToType)
+                else
+                    map[varName] = null
+            }
         }
     }
 
-    private fun mapTypeToJson(it: KProperty1<Any,*>, valueToType: Any) : JsonElement{
+    private fun mapTypeToJson(varName: String , valueToType: Any) : JsonElement{
         lateinit var valueToAdd : JsonElement
         when(valueToType){
-            is String -> valueToAdd = JsonString(it.name, valueToType)
-            is Int -> valueToAdd = JsonInteger(it.name, valueToType)
-            is Boolean -> valueToAdd = JsonBoolean(it.name, valueToType)
-            is Collection<*> -> valueToAdd = JsonCollection(it.name, valueToType, true)
-            is Enum<*> -> valueToAdd = JsonEnum(it.name, valueToType)
+            is String -> valueToAdd = JsonString(varName, valueToType)
+            is Int -> valueToAdd = JsonInteger(varName, valueToType)
+            is Boolean -> valueToAdd = JsonBoolean(varName, valueToType)
+            is Collection<*> -> valueToAdd = JsonCollection(varName, valueToType, true)
+            is Enum<*> -> valueToAdd = JsonEnum(varName, valueToType)
             else ->{
-                        valueToAdd= JsonObject(it.name, valueToType, count+1)
-                        numberOfObjects++
-                    }
-        }
-        return valueToAdd
-
-    }
-
-    private fun mapTypeToJson(name:String, valueToType: Any) : JsonElement{
-        lateinit var valueToAdd : JsonElement
-        when(valueToType){
-            is String -> valueToAdd = JsonString(name, valueToType)
-            is Int -> valueToAdd = JsonInteger(name, valueToType)
-            is Boolean -> valueToAdd = JsonBoolean(name, valueToType)
-            is Collection<*> -> valueToAdd = JsonCollection(name, valueToType)
-            is Enum<*> -> valueToAdd = JsonEnum(name, valueToType)
-            else ->{
-                        valueToAdd = JsonObject(name, valueToType, count + 1)
+                        valueToAdd= JsonObject(varName, valueToType, count+1)
                         numberOfObjects++
                     }
         }
