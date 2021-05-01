@@ -1,10 +1,10 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-class JsonCollection(name:String, value: Any, private val insideObject:Boolean = false): JsonElement(name,value) {
+class JsonCollection(value: Any,name:String="", private val insideObject:Boolean = false): JsonElement(value,name) {
 
-    val collection: MutableCollection<JsonElement?> = mutableListOf()
+    private val collection: MutableCollection<JsonElement?> = mutableListOf()
 
     init {
         if(value is Collection<*>)
@@ -49,12 +49,12 @@ class JsonCollection(name:String, value: Any, private val insideObject:Boolean =
 
     private fun mapTypeToJson(valueToType: Any): JsonElement {
         return when (valueToType) {
-            is String -> JsonString("", valueToType)
-            is Int -> JsonInteger("", valueToType)
-            is Boolean -> JsonBoolean("", valueToType)
-            is Collection<*> -> JsonCollection("", valueToType)
-            is Enum<*> -> JsonEnum("", valueToType)
-            else -> JsonObject("", valueToType)
+            is String -> JsonString( valueToType)
+            is Int -> JsonInteger(valueToType)
+            is Boolean -> JsonBoolean(valueToType)
+            is Collection<*> -> JsonCollection(valueToType)
+            is Enum<*> -> JsonEnum(valueToType)
+            else -> JsonObject(valueToType)
         }
     }
 }

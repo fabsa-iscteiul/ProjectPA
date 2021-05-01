@@ -7,7 +7,7 @@ import junit.framework.TestCase
 
 class JsonObjectTest : TestCase() {
     fun test(){
-        val jo = JsonObject("val", OtherOther("other"))
+        val jo = JsonObject(OtherOther("other"))
         assertEquals("{\n" +
                 "\t\"o\":\"other\"\n" +
                 "}\n", jo.serialize())

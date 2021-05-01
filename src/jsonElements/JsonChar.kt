@@ -1,8 +1,8 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-class JsonChar(name: String, value: Char) : JsonElement(name,value) {
+class JsonChar(value: Char, name: String="") : JsonElement(value,name) {
     override fun serialize(): String {
         if(super.getObjectName() == "")
             return "\"${super.getValue()}\""

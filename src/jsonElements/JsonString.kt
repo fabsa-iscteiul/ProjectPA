@@ -1,13 +1,13 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-class JsonString(name:String, value:String): JsonElement(name,value) {
+class JsonString(value:String, name:String=""): JsonElement(value,name) {
 
     override fun serialize(): String {
         if(super.getObjectName() == "")
             return "\"${super.getValue()}\""
-        return "\"${super.getObjectName()}\":\"${super.getValue()}\"";
+        return "\"${super.getObjectName()}\":\"${super.getValue()}\""
     }
 
     override fun accept(v: Visitor) {

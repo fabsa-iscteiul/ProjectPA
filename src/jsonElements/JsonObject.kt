@@ -2,15 +2,14 @@ package jsonElements
 
 import Id
 import Ignore
-import Visitor
+import visitor.Visitor
 import java.lang.Exception
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElement(name, value) {
+class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonElement(value,name) {
 
     val map = mutableMapOf<String, JsonElement?>()
     var numberOfObjects : Int = 0
@@ -80,13 +79,13 @@ class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElemen
     private fun mapTypeToJson(varName: String , valueToType: Any) : JsonElement{
         lateinit var valueToAdd : JsonElement
         when(valueToType){
-            is String -> valueToAdd = JsonString(varName, valueToType)
-            is Int -> valueToAdd = JsonInteger(varName, valueToType)
-            is Boolean -> valueToAdd = JsonBoolean(varName, valueToType)
-            is Collection<*> -> valueToAdd = JsonCollection(varName, valueToType, true)
-            is Enum<*> -> valueToAdd = JsonEnum(varName, valueToType)
+            is String -> valueToAdd = JsonString(valueToType,varName)
+            is Int -> valueToAdd = JsonInteger(valueToType,varName)
+            is Boolean -> valueToAdd = JsonBoolean(valueToType,varName)
+            is Collection<*> -> valueToAdd = JsonCollection(valueToType,varName, true)
+            is Enum<*> -> valueToAdd = JsonEnum(valueToType,varName)
             else ->{
-                        valueToAdd= JsonObject(varName, valueToType, count+1)
+                        valueToAdd= JsonObject(valueToType,varName, count+1)
                         numberOfObjects++
                     }
         }
@@ -109,6 +108,9 @@ class JsonObject(name:String, value: Any, private val count:Int =0) : JsonElemen
 
     override fun accept(v: Visitor){
         v.visit(this)
+        map.values.forEach {
+            it?.accept(v)
+        }
     }
 
 }

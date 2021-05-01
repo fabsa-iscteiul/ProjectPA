@@ -1,8 +1,8 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-class JsonEnum(name:String, value:Enum<*>): JsonElement(name,value) {
+class JsonEnum(value:Enum<*>,name:String=""): JsonElement(value,name) {
     override fun serialize(): String {
         if(super.getObjectName() == "")
             return "${super.getValue()}"

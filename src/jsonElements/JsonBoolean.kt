@@ -1,8 +1,8 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-class JsonBoolean(name:String,value: Boolean) : JsonElement(name,value) {
+class JsonBoolean(value: Boolean, name:String="") : JsonElement(value,name) {
 
     override fun serialize(): String {
         if(super.getObjectName() == "")

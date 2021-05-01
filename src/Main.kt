@@ -1,4 +1,7 @@
 import jsonElements.JsonObject
+import visitor.GetVisitor
+import visitor.SerializeVisitor
+import visitor.Type
 
 class TestObject(val a : Boolean, val b: ObjectTest){}
 
@@ -17,13 +20,16 @@ enum class MyEnum(private val unit:String, private val meters:Double){
     MILLIMETER("mm", 0.001);
 
 }
+data class Date(val year: Int, val month: Int, val day: Int)
 
 fun main(){
-    val v = JsonVisitor(Operation.SERIALIZE)
+    val serializeVisitor = SerializeVisitor()
+    val d = Date(2020,1, 20)
     val o = OtherOther("other")
-    val jo =JsonObject("val", TestObject(true, ObjectTest("test",OtherObject("U",o))))
-    jo.accept(v)
-    v.setOperation(Operation.GETALLSTRINGS)
-    jo.accept(v)
+    val jo =JsonObject( TestObject(true, ObjectTest("test",OtherObject("U",o))))
+    jo.accept(serializeVisitor)
+    val getVisitor = GetVisitor(Type.STRING)
+    jo.accept(getVisitor)
+    println(getVisitor.list)
 }
 

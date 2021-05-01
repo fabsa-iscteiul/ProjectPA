@@ -1,8 +1,8 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-class JsonInteger(name: String,value: Int): JsonElement(name,value) {
+class JsonInteger(value: Int, name: String=""): JsonElement(value,name) {
 
     override fun serialize(): String {
         if(super.getObjectName() == "")

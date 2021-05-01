@@ -1,8 +1,8 @@
 package jsonElements
 
-import Visitor
+import visitor.Visitor
 
-abstract class JsonElement(private val name:String, private val value:Any) {
+abstract class JsonElement(private val value:Any, private val name:String="") {
     abstract fun serialize(): String
     fun getObjectName():String{ return name }
     abstract fun accept(v: Visitor)
