@@ -5,9 +5,9 @@ import jsonElements.*
 interface Visitor {
     fun visit(bol: JsonBoolean)
     fun visit(ch: JsonChar)
-    fun visit(col: JsonCollection)
+    fun visit(col: JsonArray)
     fun visit(enum: JsonEnum)
-    fun visit(int: JsonInteger)
+    fun visit(int: JsonNumber)
     fun visit(obj: JsonObject)
     fun visit(str: JsonString)
 }

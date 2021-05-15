@@ -15,7 +15,7 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
     var numberOfObjects : Int = 0
 
     init {
-        if(value !is String && value !is Int && value !is Boolean && value !is Enum<*> && value !is Collection<*> && value !is Map<*,*>) {
+        if(value !is String && value !is Number && value !is Boolean && value !is Enum<*> && value !is Collection<*> && value !is Map<*,*>) {
             val obj = value::class as KClass<Any>
             buildObject(obj)
         }
@@ -80,9 +80,9 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
         lateinit var valueToAdd : JsonElement
         when(valueToType){
             is String -> valueToAdd = JsonString(valueToType,varName)
-            is Int -> valueToAdd = JsonInteger(valueToType,varName)
+            is Number -> valueToAdd = JsonNumber(valueToType,varName)
             is Boolean -> valueToAdd = JsonBoolean(valueToType,varName)
-            is Collection<*> -> valueToAdd = JsonCollection(valueToType,varName, true)
+            is Collection<*> -> valueToAdd = JsonArray(valueToType,varName, true)
             is Enum<*> -> valueToAdd = JsonEnum(valueToType,varName)
             else ->{
                         valueToAdd= JsonObject(valueToType,varName, count+1)
@@ -100,7 +100,7 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
                 list.add(it.getValue() as String)
             else if(it is JsonObject )
                 list.addAll(it.getAllStrings())
-            else if(it is JsonCollection)
+            else if(it is JsonArray)
                 list.addAll(it.getAllStrings())
         }
         return list
@@ -111,6 +111,15 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
         map.values.forEach {
             it?.accept(v)
         }
+    }
+
+    fun nElements() : Int {
+        var count = map.size
+        map.values.forEach {
+            if (it is JsonObject)
+                count+=it.nElements()
+        }
+        return count
     }
 
 }

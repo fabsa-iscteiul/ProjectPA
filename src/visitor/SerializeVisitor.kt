@@ -14,7 +14,7 @@ class SerializeVisitor: Visitor {
         stringToReturn+=ch.serialize()
     }
 
-    override fun visit(col: JsonCollection) {
+    override fun visit(col: JsonArray) {
         stringToReturn+=col.serialize()
     }
 
@@ -22,7 +22,7 @@ class SerializeVisitor: Visitor {
         stringToReturn+=enum.serialize()
     }
 
-    override fun visit(int: JsonInteger) {
+    override fun visit(int: JsonNumber) {
         stringToReturn+=int.serialize()
     }
 

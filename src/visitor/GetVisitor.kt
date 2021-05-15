@@ -8,7 +8,8 @@ enum class Type{
     BOOLEAN,
     ENUM,
     OBJECT,
-    CHAR
+    CHAR,
+    ARRAY
 }
 
 class GetVisitor(private var typeToGet: Type): Visitor {
@@ -25,8 +26,9 @@ class GetVisitor(private var typeToGet: Type): Visitor {
             list.add(ch)
     }
 
-    override fun visit(col: JsonCollection) {
-
+    override fun visit(col: JsonArray) {
+        if(typeToGet == Type.ARRAY)
+            list.add(col)
     }
 
     override fun visit(enum: JsonEnum) {
@@ -34,9 +36,9 @@ class GetVisitor(private var typeToGet: Type): Visitor {
             list.add(enum)
     }
 
-    override fun visit(int: JsonInteger) {
+    override fun visit(num: JsonNumber) {
         if(typeToGet == Type.NUMBER)
-            list.add(int)
+            list.add(num)
     }
 
     override fun visit(obj: JsonObject) {
