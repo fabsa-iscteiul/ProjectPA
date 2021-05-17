@@ -1,4 +1,5 @@
 import gui.Gui
+import gui.Injector
 import jsonElements.JsonObject
 import jsonElements.JsonString
 import visitor.GetVisitor
@@ -35,7 +36,7 @@ fun main(){
     //jo.accept(getVisitor)
     //println(getVisitor.list)
 
-    val gui = Gui()
+    val gui = Injector.create(Gui::class)
     gui.open(jo)
 }
 

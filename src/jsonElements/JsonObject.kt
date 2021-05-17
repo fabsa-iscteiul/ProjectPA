@@ -12,7 +12,7 @@ import kotlin.reflect.full.hasAnnotation
 class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonElement(value,name) {
 
     val map = mutableMapOf<String, JsonElement?>()
-    var numberOfObjects : Int = 0
+    private var numberOfObjects : Int = 0
 
     init {
         if(value !is String && value !is Number && value !is Boolean && value !is Enum<*> && value !is Collection<*> && value !is Map<*,*>) {
@@ -113,13 +113,6 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
         }
     }
 
-    fun nElements() : Int {
-        var count = map.size
-        map.values.forEach {
-            if (it is JsonObject)
-                count+=it.nElements()
-        }
-        return count
-    }
+    fun nElements() = map.size
 
 }
