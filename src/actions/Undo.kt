@@ -1,10 +1,12 @@
-package gui
+package actions
+
+import gui.Gui
 
 class Undo : Action {
     override val name: String
-        get() = "undo"
+        get() = "Undo"
 
-    override fun execute() {
+    override fun execute(gui: Gui) {
 
     }
 

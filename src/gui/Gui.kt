@@ -1,22 +1,20 @@
 package gui
 
-import jsonElements.JsonArray
+import Inject
+import InjectAdd
+import actions.Action
 import jsonElements.JsonElement
-import jsonElements.JsonObject
 import org.eclipse.swt.SWT
 import org.eclipse.swt.events.SelectionAdapter
 import org.eclipse.swt.events.SelectionEvent
-import org.eclipse.swt.graphics.Point
 import org.eclipse.swt.layout.GridData
 import org.eclipse.swt.layout.GridLayout
 import org.eclipse.swt.layout.RowData
 import org.eclipse.swt.layout.RowLayout
 import org.eclipse.swt.widgets.*
+import plugins.Plugin
 import visitor.BuildTreeVisitor
-import java.awt.Dimension
-import java.awt.FlowLayout
 import java.util.*
-import javax.swing.JButton
 
 class Gui {
     val shell: Shell
@@ -39,7 +37,7 @@ class Gui {
         infoRow.layoutData = RowData(shell.size.x,shell.size.y - 100)
 
         buttonRow = Composite(shell, SWT.SINGLE)
-        buttonRow.layout = GridLayout(1,true)
+        buttonRow.layout = RowLayout()
         buttonRow.layoutData = RowData(shell.size.x,75)
 
         fileTree = Tree(infoRow, SWT.SINGLE or SWT.BORDER)
@@ -64,9 +62,13 @@ class Gui {
         val rootItem = TreeItem(fileTree, SWT.NONE)
         rootItem.data = root
         rootItem.text = root.getObjectName()
-        val visitor = BuildTreeVisitor(rootItem)
+        rootItem.image = plugin.getFolderImage()
+
+        val visitor = BuildTreeVisitor(rootItem, plugin)
         root.accept(visitor)
-        setupActions()
+
+        setupButtons()
+
         shell.open()
         val display = Display.getDefault()
         while (!shell.isDisposed) {
@@ -75,14 +77,14 @@ class Gui {
         display.dispose()
     }
 
-    private fun setupActions() {
+    private fun setupButtons() {
         actions.forEach { action ->
             val button = Button(buttonRow, SWT.PUSH)
             button.text = action.name
             button.addSelectionListener( object : SelectionAdapter() {
                 override fun widgetSelected(e: SelectionEvent) {
                     actionsDone.push(action)
-                    action.execute()
+                    action.execute(this@Gui)
                 }
             })
         }
@@ -93,5 +95,9 @@ class Gui {
             val actionDone = actionsDone.pop()
             actionDone.undo()
         }
+    }
+
+    fun edit(){
+        fileTree.selection.first().text
     }
 }

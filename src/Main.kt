@@ -1,10 +1,7 @@
 import gui.Gui
-import gui.Injector
 import jsonElements.JsonObject
 import jsonElements.JsonString
-import visitor.GetVisitor
 import visitor.SerializeVisitor
-import visitor.Type
 
 class TestObject(val a : Boolean, val b: ObjectTest){}
 
@@ -26,15 +23,11 @@ enum class MyEnum(private val unit:String, private val meters:Double){
 data class Date(val year: Int, val month: Int, val day: Int)
 
 fun main(){
-    //val serializeVisitor = SerializeVisitor()
+
     val d = Date(2020,1, 20)
     val o = OtherOther("other")
     val jo =JsonObject( TestObject(true, ObjectTest("test",OtherObject("U",o))),"src")
-    val j = JsonString("ola", "name")
-    //jo.accept(serializeVisitor)
-    //val getVisitor = GetVisitor(Type.STRING)
-    //jo.accept(getVisitor)
-    //println(getVisitor.list)
+
 
     val gui = Injector.create(Gui::class)
     gui.open(jo)
