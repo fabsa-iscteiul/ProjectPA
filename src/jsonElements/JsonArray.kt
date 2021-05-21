@@ -16,7 +16,7 @@ class JsonArray(value: Any, name:String="", private val insideObject:Boolean = f
     }
 
     override fun serialize(): String {
-        var stringToReturn =if(insideObject)"${super.getObjectName()}:[" else "["
+        var stringToReturn =if(insideObject)"${super.name}:[" else "["
         collection.forEach {
             stringToReturn+= it?.serialize()+","
         }

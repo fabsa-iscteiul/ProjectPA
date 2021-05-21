@@ -33,7 +33,7 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
     }
 
     override fun serialize(): String {
-        var s = if(count==0) "{\n" else "${super.getObjectName()}:{\n"
+        var s = if(count==0) "{\n" else "${super.name}:{\n"
         map.values.forEach{
             if(count == 0)
                 s+="\t"+it!!.serialize()+",\n"

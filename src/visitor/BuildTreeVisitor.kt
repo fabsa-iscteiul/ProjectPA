@@ -18,7 +18,7 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = bol
-        newItem.text = bol.getObjectName()
+        newItem.text = bol.name
         newItem.image = plugin.getFileImage()
         nChildren--
     }
@@ -30,7 +30,7 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = ch
-        newItem.text = ch.getObjectName()
+        newItem.text = ch.name
         newItem.image = plugin.getFileImage()
         nChildren--
     }
@@ -46,7 +46,7 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = enum
-        newItem.text = enum.getObjectName()
+        newItem.text = enum.name
         newItem.image = plugin.getFileImage()
         nChildren--
     }
@@ -58,7 +58,7 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = num
-        newItem.text = num.getObjectName()
+        newItem.text = num.name
         newItem.image = plugin.getFileImage()
         nChildren--
     }
@@ -71,7 +71,7 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
         if(obj != currItem.data) {
             val newItem = TreeItem(currItem, SWT.NONE)
             newItem.data = obj
-            newItem.text = obj.getObjectName()
+            newItem.text = obj.name
             newItem.image = plugin.getFolderImage()
             currItem = newItem
             nChildren = obj.nElements()
@@ -86,7 +86,7 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
 
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = str
-        newItem.text = str.getObjectName()
+        newItem.text = str.name
         newItem.image = plugin.getFileImage()
         nChildren--
 

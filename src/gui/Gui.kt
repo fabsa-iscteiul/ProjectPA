@@ -3,6 +3,8 @@ package gui
 import Inject
 import InjectAdd
 import actions.Action
+import actions.Edit
+import actions.Undo
 import jsonElements.JsonElement
 import org.eclipse.swt.SWT
 import org.eclipse.swt.events.SelectionAdapter
@@ -26,6 +28,7 @@ class Gui {
     private val actionsDone = Stack<Action>()
     private val buttonRow:Composite
     private val infoRow:Composite
+
     init {
 
         shell = Shell(Display.getDefault())
@@ -61,7 +64,7 @@ class Gui {
     fun open(root: JsonElement) {
         val rootItem = TreeItem(fileTree, SWT.NONE)
         rootItem.data = root
-        rootItem.text = root.getObjectName()
+        rootItem.text = root.name
         rootItem.image = plugin.getFolderImage()
 
         val visitor = BuildTreeVisitor(rootItem, plugin)
@@ -83,7 +86,8 @@ class Gui {
             button.text = action.name
             button.addSelectionListener( object : SelectionAdapter() {
                 override fun widgetSelected(e: SelectionEvent) {
-                    actionsDone.push(action)
+                    if(action !is Undo)
+                        actionsDone.push(action)
                     action.execute(this@Gui)
                 }
             })
@@ -93,11 +97,15 @@ class Gui {
     fun undo(){
         if(actionsDone.size > 0) {
             val actionDone = actionsDone.pop()
-            actionDone.undo()
+            if(!actionDone.undo(this@Gui))
+                actionsDone.push(actionDone)
         }
     }
 
-    fun edit(){
-        fileTree.selection.first().text
+    fun openEditWindow(treeItem : TreeItem) {
+        val editWindow = EditWindow(treeItem, shell)
+        editWindow.open()
+        shell.isVisible = false
     }
+
 }

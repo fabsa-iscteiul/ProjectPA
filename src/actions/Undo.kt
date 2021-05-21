@@ -7,10 +7,6 @@ class Undo : Action {
         get() = "Undo"
 
     override fun execute(gui: Gui) {
-
-    }
-
-    override fun undo() {
-
+        gui.undo()
     }
 }

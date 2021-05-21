@@ -5,9 +5,9 @@ import visitor.Visitor
 class JsonBoolean(value: Boolean, name:String="") : JsonElement(value,name) {
 
     override fun serialize(): String {
-        if(super.getObjectName() == "")
+        if(super.name == "")
             return "${super.getValue()}"
-        return "\"${super.getObjectName()}\":${super.getValue()}"
+        return "\"${super.name}\":${super.getValue()}"
     }
 
     override fun accept(v: Visitor) {

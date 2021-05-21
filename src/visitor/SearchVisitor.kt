@@ -8,36 +8,36 @@ class SearchVisitor(private var typeToGet: String): Visitor {
 
     override fun visit(bol: JsonBoolean) {
         if(typeToGet == "name")
-            list.add(bol.getObjectName())
+            list.add(bol.name)
     }
 
     override fun visit(ch: JsonChar) {
         if(typeToGet == "name")
-            list.add(ch.getObjectName())
+            list.add(ch.name)
     }
 
     override fun visit(col: JsonArray) {
         if(typeToGet == "name")
-            list.add(col.getObjectName())
+            list.add(col.name)
     }
 
     override fun visit(enum: JsonEnum) {
         if(typeToGet == "name")
-            list.add(enum.getObjectName())
+            list.add(enum.name)
     }
 
     override fun visit(num: JsonNumber) {
         if(typeToGet == "name")
-            list.add(num.getObjectName())
+            list.add(num.name)
     }
 
     override fun visit(obj: JsonObject) {
         if(typeToGet == "name")
-            list.add(obj.getObjectName())
+            list.add(obj.name)
     }
 
     override fun visit(str: JsonString) {
         if(typeToGet == "name")
-            list.add(str.getObjectName())
+            list.add(str.name)
     }
 }
