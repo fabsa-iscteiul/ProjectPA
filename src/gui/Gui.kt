@@ -16,6 +16,7 @@ import org.eclipse.swt.layout.RowLayout
 import org.eclipse.swt.widgets.*
 import plugins.Plugin
 import visitor.BuildTreeVisitor
+import visitor.SerializeVisitor
 import java.util.*
 
 class Gui {
@@ -28,6 +29,7 @@ class Gui {
     private val actionsDone = Stack<Action>()
     private val buttonRow:Composite
     private val infoRow:Composite
+    private val serializer= SerializeVisitor()
 
     init {
 
@@ -54,7 +56,9 @@ class Gui {
             override fun widgetSelected(e: SelectionEvent) {
                 val selectedItem = fileTree.selection.first().data
                 if(selectedItem is JsonElement){
-                    text.text = selectedItem.serialize()
+                    serializer.stringToReturn=""
+                    selectedItem.accept(serializer)
+                    text.text = serializer.stringToReturn
                 }
 
             }

@@ -2,6 +2,7 @@ package jsonElements
 
 import Id
 import Ignore
+import visitor.SerializeVisitor
 import visitor.Visitor
 import java.lang.Exception
 import kotlin.reflect.KClass
@@ -9,10 +10,9 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonElement(value,name) {
+class JsonObject( value: Any,name:String="") : JsonElement(value,name) {
 
     val map = mutableMapOf<String, JsonElement?>()
-    private var numberOfObjects : Int = 0
 
     init {
         if(value !is String && value !is Number && value !is Boolean && value !is Enum<*> && value !is Collection<*> && value !is Map<*,*>) {
@@ -30,37 +30,6 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
         }
         else
             throw Exception("Insert a valid value for the object")
-    }
-
-    override fun serialize(): String {
-        var s = if(count==0) "{\n" else "${super.name}:{\n"
-        map.values.forEach{
-            if(count == 0)
-                s+="\t"+it!!.serialize()+",\n"
-            else {
-                for (i in 0..count)
-                    s += "\t"
-                s+=it!!.serialize()+",\n"
-            }
-        }
-        s =s.removeSuffix(",\n")
-        if(count == 0) {
-            s+="\n"
-            while(numberOfObjects > 0){
-                for (i in 0 until numberOfObjects)
-                    s += "\t"
-                numberOfObjects--
-                s += "}\n"
-            }
-            s += "}\n"
-        }
-        else if(count>=2) {
-            s+="\n"
-            for (i in 0 until count)
-                s+="\t"
-            s+="}"
-        }
-        return s
     }
 
     private fun buildObject(obj : KClass<Any>){
@@ -84,10 +53,8 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
             is Boolean -> valueToAdd = JsonBoolean(valueToType,varName)
             is Collection<*> -> valueToAdd = JsonArray(valueToType,varName, true)
             is Enum<*> -> valueToAdd = JsonEnum(valueToType,varName)
-            else ->{
-                        valueToAdd= JsonObject(valueToType,varName, count+1)
-                        numberOfObjects++
-                    }
+            else -> valueToAdd= JsonObject(valueToType,varName)
+
         }
         return valueToAdd
 
@@ -108,8 +75,18 @@ class JsonObject( value: Any,name:String="", private val count:Int =0) : JsonEle
 
     override fun accept(v: Visitor){
         v.visit(this)
+        if(v is SerializeVisitor)
+            v.numObj++
         map.values.forEach {
             it?.accept(v)
+        }
+        if(v is SerializeVisitor) {
+            v.numObj--
+            v.stringToReturn = v.stringToReturn.removeSuffix(",\n") +"\n"
+            v.stringToReturn += "${v.addTabs()}]\n"
+            v.numObj--
+            v.stringToReturn += "${v.addTabs()}}"
+            v.stringToReturn+=if(v.numObj == 0) "\n" else ",\n"
         }
     }
 
