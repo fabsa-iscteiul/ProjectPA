@@ -2,42 +2,42 @@ package visitor
 
 import jsonElements.*
 
-class SearchVisitor(private var typeToGet: String): Visitor {
+class SearchNameVisitor(private val nameToSearch: String): Visitor {
 
     val list = mutableListOf<String>()
 
     override fun visit(bol: JsonBoolean) {
-        if(typeToGet == "name")
+        if(bol.name.contains(nameToSearch) && nameToSearch !="")
             list.add(bol.name)
     }
 
     override fun visit(ch: JsonChar) {
-        if(typeToGet == "name")
+        if(ch.name.contains(nameToSearch) && nameToSearch !="")
             list.add(ch.name)
     }
 
     override fun visit(col: JsonArray) {
-        if(typeToGet == "name")
+        if(col.name.contains(nameToSearch) && nameToSearch !="")
             list.add(col.name)
     }
 
     override fun visit(enum: JsonEnum) {
-        if(typeToGet == "name")
+        if(enum.name.contains(nameToSearch)&& nameToSearch !="")
             list.add(enum.name)
     }
 
     override fun visit(num: JsonNumber) {
-        if(typeToGet == "name")
+        if(num.name.contains(nameToSearch)&& nameToSearch !="")
             list.add(num.name)
     }
 
     override fun visit(obj: JsonObject) {
-        if(typeToGet == "name")
+        if(obj.name.contains(nameToSearch)&& nameToSearch !="")
             list.add(obj.name)
     }
 
     override fun visit(str: JsonString) {
-        if(typeToGet == "name")
+        if(str.name.contains(nameToSearch)&& nameToSearch !="")
             list.add(str.name)
     }
 }

@@ -36,7 +36,18 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     }
 
     override fun visit(col: JsonArray) {
-
+        if(nChildren == 0) {
+            currItem = currItem.parentItem
+            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+        }
+        if(col != currItem.data) {
+            val newItem = TreeItem(currItem, SWT.NONE)
+            newItem.data = col
+            newItem.text = col.name
+            newItem.image = plugin.getFolderImage()
+            currItem = newItem
+            nChildren = col.nElements()
+        }
     }
 
     override fun visit(enum: JsonEnum) {

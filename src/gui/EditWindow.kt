@@ -7,8 +7,9 @@ import org.eclipse.swt.events.SelectionEvent
 import org.eclipse.swt.graphics.Point
 import org.eclipse.swt.layout.GridLayout
 import org.eclipse.swt.widgets.*
+import visitor.SerializeVisitor
 
-class EditWindow(val treeItem : TreeItem, sh: Shell) {
+class EditWindow(val treeItem : TreeItem, sh: Shell, val text: Text) {
     private val shell : Shell = Shell(Display.getDefault())
 
     init {
@@ -31,8 +32,12 @@ class EditWindow(val treeItem : TreeItem, sh: Shell) {
                 val updatedText = inputArea.text
                 if(updatedText !="") {
                     treeItem.text = updatedText
-                    if (treeItem.data is JsonElement)
+                    if (treeItem.data is JsonElement) {
                         (treeItem.data as JsonElement).name = updatedText
+                        val serializer = SerializeVisitor()
+                        (treeItem.data as JsonElement).accept(serializer)
+                        text.text = serializer.stringToReturn
+                    }
                 }
                 shell.close()
             }

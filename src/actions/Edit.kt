@@ -2,6 +2,7 @@ package actions
 
 import gui.Gui
 import jsonElements.JsonElement
+import visitor.SerializeVisitor
 
 class Edit : Action {
 
@@ -22,6 +23,9 @@ class Edit : Action {
             map[previousName]?.name = previousName
             map.remove(previousName)
             gui.fileTree.selection.first().text = previousName
+            val serializer = SerializeVisitor()
+            (gui.fileTree.selection.first().data as JsonElement).accept(serializer)
+            gui.text.text = serializer.stringToReturn
             if(map.isNotEmpty())
                 previousName = map.keys.last()
             true

@@ -7,7 +7,7 @@ interface Visitor {
     fun visit(ch: JsonChar)
     fun visit(col: JsonArray)
     fun visit(enum: JsonEnum)
-    fun visit(int: JsonNumber)
+    fun visit(num: JsonNumber)
     fun visit(obj: JsonObject)
     fun visit(str: JsonString)
 }

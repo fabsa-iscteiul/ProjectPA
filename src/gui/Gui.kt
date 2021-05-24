@@ -3,12 +3,16 @@ package gui
 import Inject
 import InjectAdd
 import actions.Action
-import actions.Edit
 import actions.Undo
 import jsonElements.JsonElement
 import org.eclipse.swt.SWT
+import org.eclipse.swt.events.KeyAdapter
+import org.eclipse.swt.events.KeyEvent
 import org.eclipse.swt.events.SelectionAdapter
 import org.eclipse.swt.events.SelectionEvent
+import org.eclipse.swt.graphics.Color
+import org.eclipse.swt.graphics.Point
+import org.eclipse.swt.graphics.RGB
 import org.eclipse.swt.layout.GridData
 import org.eclipse.swt.layout.GridLayout
 import org.eclipse.swt.layout.RowData
@@ -16,11 +20,12 @@ import org.eclipse.swt.layout.RowLayout
 import org.eclipse.swt.widgets.*
 import plugins.Plugin
 import visitor.BuildTreeVisitor
+import visitor.SearchNameVisitor
 import visitor.SerializeVisitor
 import java.util.*
 
 class Gui {
-    val shell: Shell
+    private val shell: Shell = Shell(Display.getDefault())
     val fileTree: Tree
     @InjectAdd
     private val actions = mutableListOf<Action>()
@@ -30,25 +35,65 @@ class Gui {
     private val buttonRow:Composite
     private val infoRow:Composite
     private val serializer= SerializeVisitor()
+    val text : Text
 
     init {
 
-        shell = Shell(Display.getDefault())
         shell.text = "PAProject"
         shell.layout = RowLayout()
 
         infoRow = Composite(shell, SWT.SINGLE)
         infoRow.layout = GridLayout(2, true)
-        infoRow.layoutData = RowData(shell.size.x,shell.size.y - 100)
+        infoRow.layoutData = RowData(shell.size.x,shell.size.y - 125)
+
+        fileTree = Tree(infoRow, SWT.SINGLE or SWT.BORDER)
+        fileTree.layoutData = GridData(SWT.FILL, SWT.FILL, true, true)
+
+        val searchRow = Composite(shell, SWT.SINGLE)
+        searchRow.layout = GridLayout(2,false)
+
+        val label  = Label(searchRow, SWT.SINGLE)
+        label.text = "Search: "
+
+        val search = Text(searchRow, SWT.SINGLE)
+        search.size = Point(200,30)
+        search.editable=true
+        search.addKeyListener(object : KeyAdapter(){
+            override fun keyPressed(e: KeyEvent?) {
+                val searchVisitor: SearchNameVisitor = if (e?.keyCode != 8)
+                    SearchNameVisitor(search.text + "" + e?.character)
+                else if(search.text == "")
+                    SearchNameVisitor("")
+                else {
+                    if(search.text.length == 1)
+                        SearchNameVisitor("")
+                    else
+                        SearchNameVisitor(search.text)
+                }
+
+                fileTree.items.forEach {
+                    if (it.data is JsonElement)
+                        (it.data as JsonElement).accept(searchVisitor)
+                }
+                println(searchVisitor.list)
+                if(searchVisitor.list.isNotEmpty()) {
+                    searchVisitor.list.forEach {
+                        highlightSearch(it, fileTree.items[0])
+                    }
+                }
+                else
+                    dehighlightSearch(fileTree.items[0])
+
+            }
+        })
 
         buttonRow = Composite(shell, SWT.SINGLE)
         buttonRow.layout = RowLayout()
         buttonRow.layoutData = RowData(shell.size.x,75)
 
-        fileTree = Tree(infoRow, SWT.SINGLE or SWT.BORDER)
-        fileTree.layoutData = GridData(SWT.FILL, SWT.FILL, true, true)
 
-        val text = Text(infoRow, SWT.MULTI)
+
+        text = Text(infoRow, SWT.MULTI)
         text.layoutData = GridData(GridData.FILL_BOTH)
         text.editable = false
 
@@ -57,6 +102,7 @@ class Gui {
                 val selectedItem = fileTree.selection.first().data
                 if(selectedItem is JsonElement){
                     serializer.stringToReturn=""
+                    serializer.numObj =0
                     selectedItem.accept(serializer)
                     text.text = serializer.stringToReturn
                 }
@@ -107,9 +153,28 @@ class Gui {
     }
 
     fun openEditWindow(treeItem : TreeItem) {
-        val editWindow = EditWindow(treeItem, shell)
+        val editWindow = EditWindow(treeItem, shell, text)
         editWindow.open()
         shell.isVisible = false
+    }
+
+    private fun highlightSearch(name: String, treeItem: TreeItem){
+        if(treeItem.text == name)
+            treeItem.background = Color(RGB(10, 75, 120))
+        treeItem.items.forEach {
+            if(name == it.text)
+                it.background = Color(RGB(10, 75, 120))
+            else
+                highlightSearch(name, it)
+        }
+    }
+
+    private fun dehighlightSearch(treeItem: TreeItem){
+        treeItem.background = null
+        treeItem.items.forEach {
+            it.background = null
+            dehighlightSearch(it)
+        }
     }
 
 }

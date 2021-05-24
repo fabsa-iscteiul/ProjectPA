@@ -1,8 +1,9 @@
 package jsonElements
 
+import visitor.SerializeVisitor
 import visitor.Visitor
 
-class JsonArray(value: Any, name:String="", private val insideObject:Boolean = false): JsonElement(value,name) {
+class JsonArray(value: Any, name:String=""): JsonElement(value,name) {
 
     private val collection: MutableCollection<JsonElement?> = mutableListOf()
 
@@ -13,6 +14,19 @@ class JsonArray(value: Any, name:String="", private val insideObject:Boolean = f
 
     override fun accept(v: Visitor) {
         v.visit(this)
+        if(v is SerializeVisitor)
+            v.numObj++
+        collection.forEach {
+            it?.accept(v)
+        }
+        if(v is SerializeVisitor) {
+            v.numObj--
+            v.stringToReturn = v.stringToReturn.removeSuffix(",\n") +"\n"
+            v.stringToReturn += "${v.addTabs()}]\n"
+            v.numObj--
+            v.stringToReturn += "${v.addTabs()}}"
+            v.stringToReturn+=if(v.numObj == 0) "\n" else ",\n"
+        }
     }
 
     private fun initCollection(col: Collection<*>){
@@ -22,7 +36,6 @@ class JsonArray(value: Any, name:String="", private val insideObject:Boolean = f
             else
                 collection.add(null)
         }
-
     }
 
     fun getAllStrings():List<String>{
@@ -41,11 +54,14 @@ class JsonArray(value: Any, name:String="", private val insideObject:Boolean = f
     private fun mapTypeToJson(valueToType: Any): JsonElement {
         return when (valueToType) {
             is String -> JsonString( valueToType)
-            is Number -> JsonNumber(valueToType)
+            is Number -> JsonNumber(valueToType )
             is Boolean -> JsonBoolean(valueToType)
             is Collection<*> -> JsonArray(valueToType)
             is Enum<*> -> JsonEnum(valueToType)
             else -> JsonObject(valueToType)
         }
     }
+
+
+    fun nElements() = collection.size
 }

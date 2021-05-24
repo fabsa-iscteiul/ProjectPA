@@ -51,7 +51,7 @@ class JsonObject( value: Any,name:String="") : JsonElement(value,name) {
             is String -> valueToAdd = JsonString(valueToType,varName)
             is Number -> valueToAdd = JsonNumber(valueToType,varName)
             is Boolean -> valueToAdd = JsonBoolean(valueToType,varName)
-            is Collection<*> -> valueToAdd = JsonArray(valueToType,varName, true)
+            is Collection<*> -> valueToAdd = JsonArray(valueToType,varName)
             is Enum<*> -> valueToAdd = JsonEnum(valueToType,varName)
             else -> valueToAdd= JsonObject(valueToType,varName)
 

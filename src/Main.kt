@@ -6,8 +6,6 @@ import visitor.SerializeVisitor
 
 class TestObject(val file1 : Boolean, val dir1: ObjectTest){}
 
-class TestCollect(val list: MutableList<Any>) {}
-
 class OtherOther(val file2:String)
 
 class OtherObject(val file1 : String, val dir3: OtherOther,@Id("newID") val enum: MyEnum = MyEnum.CENTIMETER){}
