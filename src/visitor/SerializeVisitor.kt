@@ -37,7 +37,7 @@ class SerializeVisitor: Visitor {
     override fun visit(enum: JsonEnum) {
         stringToReturn += "${addTabs()}{\n"
         numObj++
-        stringToReturn += "${addTabs()}\"name\":\"${enum.name}\",\n${addTabs()}\"value\":${enum.getValue()}\n"
+        stringToReturn += "${addTabs()}\"name\":\"${enum.name}\",\n${addTabs()}\"value\":\"${enum.getValue()}\"\n"
         numObj--
         stringToReturn += if (numObj == 0) "${addTabs()}}\n" else "${addTabs()}},\n"
     }

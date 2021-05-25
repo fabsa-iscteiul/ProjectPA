@@ -22,20 +22,22 @@ import plugins.Plugin
 import visitor.BuildTreeVisitor
 import visitor.SearchNameVisitor
 import visitor.SerializeVisitor
+import java.io.File
 import java.util.*
 
 class Gui {
-    private val shell: Shell = Shell(Display.getDefault())
+    val shell: Shell = Shell(Display.getDefault())
     val fileTree: Tree
     @InjectAdd
     private val actions = mutableListOf<Action>()
     @Inject
     private lateinit var plugin : Plugin
-    private val actionsDone = Stack<Action>()
+    val actionsDone = Stack<Action>()
     private val buttonRow:Composite
     private val infoRow:Composite
     private val serializer= SerializeVisitor()
     val text : Text
+    val createdFiles = mutableListOf<String>()
 
     init {
 
@@ -93,7 +95,7 @@ class Gui {
 
 
 
-        text = Text(infoRow, SWT.MULTI)
+        text = Text(infoRow, SWT.MULTI or SWT.V_SCROLL)
         text.layoutData = GridData(GridData.FILL_BOTH)
         text.editable = false
 
@@ -153,10 +155,17 @@ class Gui {
     }
 
     fun openEditWindow(treeItem : TreeItem) {
-        val editWindow = EditWindow(treeItem, shell, text)
+        val editWindow = EditWindow(treeItem, shell, text, this@Gui)
         editWindow.open()
         shell.isVisible = false
     }
+
+    fun saveToFile() {
+        val fileSave = FileSaveWindow(text.text, shell, this@Gui)
+        fileSave.open()
+        shell.isVisible = false
+    }
+
 
     private fun highlightSearch(name: String, treeItem: TreeItem){
         if(treeItem.text == name)
