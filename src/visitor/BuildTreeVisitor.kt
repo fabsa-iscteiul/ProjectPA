@@ -9,12 +9,17 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     private var currItem : TreeItem = root
     private var nChildren: Int = if(currItem.data is JsonObject)
                                     (currItem.data as JsonObject).nElements()
+                                 else if(currItem.data is JsonArray)
+                                    (currItem.data as JsonArray).nElements()
                                  else 0
 
     override fun visit(bol: JsonBoolean) {
-        if(nChildren == 0) {
+        while(nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = bol
@@ -24,9 +29,12 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     }
 
     override fun visit(ch: JsonChar) {
-        if(nChildren == 0) {
+        while(nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = ch
@@ -36,24 +44,33 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     }
 
     override fun visit(col: JsonArray) {
-        if(nChildren == 0) {
+        while(nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
         if(col != currItem.data) {
             val newItem = TreeItem(currItem, SWT.NONE)
             newItem.data = col
             newItem.text = col.name
-            newItem.image = plugin.getFolderImage()
+            if(col.containsObject())
+                newItem.image = plugin.getFolderImage()
+            else
+                newItem.image = plugin.getFileImage()
             currItem = newItem
             nChildren = col.nElements()
         }
     }
 
     override fun visit(enum: JsonEnum) {
-        if(nChildren == 0) {
+        while(nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = enum
@@ -63,9 +80,12 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     }
 
     override fun visit(num: JsonNumber) {
-        if(nChildren == 0) {
+        while(nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
         val newItem = TreeItem(currItem, SWT.NONE)
         newItem.data = num
@@ -75,9 +95,12 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     }
 
     override fun visit(obj: JsonObject) {
-        if(nChildren == 0) {
+        while(nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
         if(obj != currItem.data) {
             val newItem = TreeItem(currItem, SWT.NONE)
@@ -90,9 +113,12 @@ class BuildTreeVisitor(private val root: TreeItem, private val plugin: Plugin ):
     }
 
     override fun visit(str: JsonString) {
-        if (nChildren == 0) {
+        while (nChildren == 0) {
             currItem = currItem.parentItem
-            nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            if(currItem.data is JsonObject)
+                nChildren = (currItem.data as JsonObject).nElements() - currItem.itemCount
+            else if(currItem.data is JsonArray)
+                nChildren = (currItem.data as JsonArray).nElements() - currItem.itemCount
         }
 
         val newItem = TreeItem(currItem, SWT.NONE)

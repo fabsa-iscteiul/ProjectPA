@@ -5,7 +5,7 @@ import visitor.Visitor
 
 class JsonArray(value: Any, name:String=""): JsonElement(value,name) {
 
-    private val collection: MutableCollection<JsonElement?> = mutableListOf()
+    private val collection : MutableCollection<Any?> = mutableListOf()
 
     init {
         if(value is Collection<*>)
@@ -17,9 +17,17 @@ class JsonArray(value: Any, name:String=""): JsonElement(value,name) {
         if(v is SerializeVisitor)
             v.numObj++
         collection.forEach {
-            it?.accept(v)
+            if(it is JsonElement)
+                it?.accept(v)
+            else if(v is SerializeVisitor) {
+                if (v.stringToReturn.endsWith("[\n"))
+                    v.stringToReturn += "${v.addTabs()}\t$it,"
+                else
+                    v.stringToReturn += "$it,"
+            }
         }
         if(v is SerializeVisitor) {
+            v.stringToReturn = v.stringToReturn.removeSuffix(",")
             v.numObj--
             v.stringToReturn = v.stringToReturn.removeSuffix(",\n") +"\n"
             v.stringToReturn += "${v.addTabs()}]\n"
@@ -31,37 +39,32 @@ class JsonArray(value: Any, name:String=""): JsonElement(value,name) {
 
     private fun initCollection(col: Collection<*>){
         col.forEach {
-            if(it != null )
-                collection.add(mapTypeToJson(it))
+            if(it != null ) {
+                if (it is String || it is Number || it is Boolean || it is Enum<*>)
+                    collection.add(it)
+                else
+                    collection.add(mapTypeToJson(it))
+            }
             else
                 collection.add(null)
         }
     }
 
-    fun getAllStrings():List<String>{
-        val list = mutableListOf<String>()
-        collection.forEach {
-            if(it is JsonString)
-                list.add(it.getValue() as String)
-            else if(it is JsonObject )
-                list.addAll(it.getAllStrings())
-            else if(it is JsonArray)
-                list.addAll(it.getAllStrings())
-        }
-        return list
-    }
 
     private fun mapTypeToJson(valueToType: Any): JsonElement {
         return when (valueToType) {
-            is String -> JsonString( valueToType)
-            is Number -> JsonNumber(valueToType )
-            is Boolean -> JsonBoolean(valueToType)
             is Collection<*> -> JsonArray(valueToType)
-            is Enum<*> -> JsonEnum(valueToType)
             else -> JsonObject(valueToType)
         }
     }
 
+    fun containsObject() : Boolean {
+      collection.forEach {
+          if(it is JsonElement)
+              return true
+      }
+      return false
+    }
 
     fun nElements() = collection.size
 }

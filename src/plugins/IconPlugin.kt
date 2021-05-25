@@ -6,8 +6,8 @@ import plugins.Plugin
 
 class IconPlugin : Plugin {
 
-    private val folderIcon = Image(Display.getCurrent(),"src\\Folder-Generic-Green-icon.png")
-    private val fileIcon = Image(Display.getCurrent(),"src\\FileIcon.png")
+    private val folderIcon = Image(Display.getCurrent(),"src/Folder-Generic-Green-icon.png")
+    private val fileIcon = Image(Display.getCurrent(),"src/FileIcon.png")
 
     override fun getFolderImage(): Image? {
         return folderIcon

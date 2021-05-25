@@ -1,4 +1,5 @@
 import gui.Gui
+import jsonElements.JsonArray
 import jsonElements.JsonBoolean
 import jsonElements.JsonObject
 import jsonElements.JsonString
@@ -20,10 +21,15 @@ enum class MyEnum(private val unit:String, private val meters:Double){
 
 }
 
+class TestCollect(val list : MutableCollection<Any>,val list1 : MutableCollection<Any>,val list2 : String)
+
 fun main(){
     val o = OtherOther("other")
-    val jo =JsonObject( TestObject(true, ObjectTest("test",OtherObject("U",o))),"src")
+    val jo =JsonObject( TestObject(true, ObjectTest("test",OtherObject("U",o))))
 
+    val js = JsonString("asd", "name")
+    val ja = JsonArray(mutableListOf(1,2,3), "s")
+    val joo = JsonObject(TestCollect(mutableListOf(o,o,o),mutableListOf(o,o,o),"llll"), "src")
     val gui = Injector.create(Gui::class)
     gui.open(jo)
 }

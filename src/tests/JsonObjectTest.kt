@@ -14,6 +14,5 @@ class JsonObjectTest : TestCase() {
                 "}\n", "")
         assertEquals("other", jo.map["o"]?.getValue())
         assertTrue("", jo.map["o"] is JsonString)
-        assertEquals(listOf("other"), jo.getAllStrings())
     }
 }

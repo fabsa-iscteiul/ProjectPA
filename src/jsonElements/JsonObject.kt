@@ -45,32 +45,17 @@ class JsonObject( value: Any,name:String="") : JsonElement(value,name) {
         }
     }
 
-    private fun mapTypeToJson(varName: String , valueToType: Any) : JsonElement{
-        lateinit var valueToAdd : JsonElement
-        when(valueToType){
-            is String -> valueToAdd = JsonString(valueToType,varName)
-            is Number -> valueToAdd = JsonNumber(valueToType,varName)
-            is Boolean -> valueToAdd = JsonBoolean(valueToType,varName)
-            is Collection<*> -> valueToAdd = JsonArray(valueToType,varName)
-            is Enum<*> -> valueToAdd = JsonEnum(valueToType,varName)
-            else -> valueToAdd= JsonObject(valueToType,varName)
+    private fun mapTypeToJson(varName: String, valueToType: Any): JsonElement {
+        return when (valueToType) {
+            is String -> JsonString(valueToType, varName)
+            is Number -> JsonNumber(valueToType, varName)
+            is Boolean -> JsonBoolean(valueToType, varName)
+            is Collection<*> -> JsonArray(valueToType, varName)
+            is Enum<*> -> JsonEnum(valueToType, varName)
+            else -> JsonObject(valueToType, varName)
 
         }
-        return valueToAdd
 
-    }
-
-    fun getAllStrings():List<String>{
-        val list = mutableListOf<String>()
-        map.values.forEach {
-            if(it is JsonString)
-                list.add(it.getValue() as String)
-            else if(it is JsonObject )
-                list.addAll(it.getAllStrings())
-            else if(it is JsonArray)
-                list.addAll(it.getAllStrings())
-        }
-        return list
     }
 
     override fun accept(v: Visitor){

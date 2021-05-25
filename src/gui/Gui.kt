@@ -4,7 +4,9 @@ import Inject
 import InjectAdd
 import actions.Action
 import actions.Undo
+import jsonElements.JsonArray
 import jsonElements.JsonElement
+import jsonElements.JsonObject
 import org.eclipse.swt.SWT
 import org.eclipse.swt.events.KeyAdapter
 import org.eclipse.swt.events.KeyEvent
@@ -22,16 +24,15 @@ import plugins.Plugin
 import visitor.BuildTreeVisitor
 import visitor.SearchNameVisitor
 import visitor.SerializeVisitor
-import java.io.File
 import java.util.*
 
 class Gui {
-    val shell: Shell = Shell(Display.getDefault())
+    private val shell: Shell = Shell(SWT.CLOSE or SWT.TITLE or SWT.MIN)
     val fileTree: Tree
     @InjectAdd
     private val actions = mutableListOf<Action>()
     @Inject
-    private lateinit var plugin : Plugin
+    lateinit var plugin : Plugin
     val actionsDone = Stack<Action>()
     private val buttonRow:Composite
     private val infoRow:Composite
@@ -62,29 +63,23 @@ class Gui {
         search.editable=true
         search.addKeyListener(object : KeyAdapter(){
             override fun keyPressed(e: KeyEvent?) {
-                val searchVisitor: SearchNameVisitor = if (e?.keyCode != 8)
-                    SearchNameVisitor(search.text + "" + e?.character)
-                else if(search.text == "")
-                    SearchNameVisitor("")
-                else {
-                    if(search.text.length == 1)
-                        SearchNameVisitor("")
-                    else
-                        SearchNameVisitor(search.text)
+                val searchVisitor: SearchNameVisitor = when {
+                    e?.keyCode != 8 -> SearchNameVisitor(search.text + "" + e?.character)
+                    search.text.isEmpty() -> SearchNameVisitor("")
+                    else -> SearchNameVisitor(search.text.substring(0,search.text.length-1))
                 }
 
                 fileTree.items.forEach {
                     if (it.data is JsonElement)
                         (it.data as JsonElement).accept(searchVisitor)
                 }
-                println(searchVisitor.list)
                 if(searchVisitor.list.isNotEmpty()) {
                     searchVisitor.list.forEach {
                         highlightSearch(it, fileTree.items[0])
                     }
                 }
                 else
-                    dehighlightSearch(fileTree.items[0])
+                    removeHighlightSearch(fileTree.items[0])
 
             }
         })
@@ -117,10 +112,17 @@ class Gui {
         val rootItem = TreeItem(fileTree, SWT.NONE)
         rootItem.data = root
         rootItem.text = root.name
-        rootItem.image = plugin.getFolderImage()
-
+        rootItem.image = plugin.getFileImage()
         val visitor = BuildTreeVisitor(rootItem, plugin)
-        root.accept(visitor)
+        if(root is JsonArray) {
+            if (root.containsObject())
+                rootItem.image = plugin.getFolderImage()
+            root.accept(visitor)
+        }
+        else if(root is JsonObject) {
+            rootItem.image = plugin.getFolderImage()
+            root.accept(visitor)
+        }
 
         setupButtons()
 
@@ -178,11 +180,11 @@ class Gui {
         }
     }
 
-    private fun dehighlightSearch(treeItem: TreeItem){
+    private fun removeHighlightSearch(treeItem: TreeItem){
         treeItem.background = null
         treeItem.items.forEach {
             it.background = null
-            dehighlightSearch(it)
+            removeHighlightSearch(it)
         }
     }
 
