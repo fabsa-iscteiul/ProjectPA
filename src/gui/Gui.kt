@@ -64,6 +64,7 @@ class Gui {
         search.editable=true
         search.addKeyListener(object : KeyAdapter(){
             override fun keyPressed(e: KeyEvent?) {
+                removeHighlightSearch(fileTree.items[0])
                 val searchVisitor: SearchNameVisitor = when {
                     e?.keyCode != 8 -> SearchNameVisitor(search.text + "" + e?.character)
                     search.text.isEmpty() -> SearchNameVisitor("")
