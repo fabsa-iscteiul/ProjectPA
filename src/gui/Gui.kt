@@ -152,7 +152,6 @@ class Gui {
     fun undo(){
         if(actionsDone.size > 0) {
             val actionDone = actionsDone.pop()
-            println(actionDone)
             if(!actionDone.undo(this@Gui))
                 actionsDone.push(actionDone)
         }
