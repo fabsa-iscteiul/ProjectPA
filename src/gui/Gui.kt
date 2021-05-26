@@ -24,6 +24,7 @@ import plugins.Plugin
 import visitor.BuildTreeVisitor
 import visitor.SearchNameVisitor
 import visitor.SerializeVisitor
+import java.io.File
 import java.util.*
 
 class Gui {
@@ -151,6 +152,7 @@ class Gui {
     fun undo(){
         if(actionsDone.size > 0) {
             val actionDone = actionsDone.pop()
+            println(actionDone)
             if(!actionDone.undo(this@Gui))
                 actionsDone.push(actionDone)
         }
@@ -163,9 +165,15 @@ class Gui {
     }
 
     fun saveToFile() {
-        val fileSave = FileSaveWindow(text.text, shell, this@Gui)
-        fileSave.open()
-        shell.isVisible = false
+        val dialog = FileDialog(shell, SWT.SAVE)
+        dialog.fileName = "json.json"
+        val fileName = dialog.open()
+        if(fileName != null) {
+            createdFiles.add(fileName)
+            File(fileName).writeText(text.text)
+        }
+        else
+            actionsDone.pop()
     }
 
 
